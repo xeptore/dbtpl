@@ -52,23 +52,27 @@ jobs:
           clean: true
           show-progress: true
 
-      - name: Mirror Tags
+      - name: Filter Upstream Tags
         shell: bash
+        working-directory: upstream
         run: |-
           set -Eeuo pipefail
 
           cutoff="2024-01-01T00:00:00Z"
 
-          echo "::group::Mirroring tags newer than $cutoff"
-
           git for-each-ref \
             --sort=creatordate \
             --format='%(refname:short) %(creatordate:iso-strict)' \
-            refs/remotes/upstream/tags \
-            | awk -v c="$cutoff" '$2 >= c {print $1, $2}' \
-            > upstream_tags.txt
+            refs/tags \
+            | awk -v c="$cutoff" '$2 >= c {print $1, $2}' > ../tags.txt
 
-          if [[ ! -s upstream_tags.txt ]]; then
+      - name: Mirror Tags
+        shell: bash
+        working-directory: current
+        run: |-
+          set -Eeuo pipefail
+
+          if [[ ! -s ../tags.txt ]]; then
             echo "::notice::No upstream tags newer than cutoff."
             exit 0
           fi
@@ -80,16 +84,16 @@ jobs:
               continue
             fi
 
-            sha=$(git ls-remote --tags upstream "refs/tags/${tag}" | awk '{print $1}' | head -n1)
+            sha=$(cd ../upstream && git rev-list -n 1 "${tag}" 2>/dev/null || true)
             if [[ -z "$sha" ]]; then
-              echo "::warning::⚠️ Tag $tag not found on upstream"
+              echo "::warning::⚠️  Unable to resolve tag '$tag' in upstream"
               continue
             fi
 
-            git tag -f "$ns" "$sha" >/dev/null
-            git push -f origin "refs/tags/${ns}:refs/tags/${ns}" >/dev/null
+            git tag -f "$ns" "$sha"
+            git push -f origin "refs/tags/${ns}:refs/tags/${ns}"
             echo "::notice title=Tag pushed::$ns → $sha ($date)"
-          done < upstream_tags.txt
+          done < ../tags.txt
 
           echo "::endgroup::"
 
