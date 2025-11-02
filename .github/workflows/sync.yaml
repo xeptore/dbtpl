@@ -22,6 +22,8 @@ permissions:
   repository-projects: none
   security-events: none
   statuses: none
+  attestations: none
+  models: none
 
 concurrency:
   group: ${{ github.workflow }}/${{ github.ref_type }}/${{ github.ref_name }}
@@ -30,6 +32,8 @@ concurrency:
 jobs:
   sync-tags:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
