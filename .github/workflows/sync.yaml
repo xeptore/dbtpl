@@ -66,11 +66,13 @@ jobs:
             refs/tags \
             | awk -v c="$cutoff" '$2 >= c {print $1, $2}' > ../tags.txt
 
+          cat ../tags.txt
+
       - name: Mirror Tags
         shell: bash
         working-directory: current
         run: |-
-          set -Eeuo pipefail
+          set -Eeuxo xtrace pipefail
 
           if [[ ! -s ../tags.txt ]]; then
             echo "::notice::No upstream tags newer than cutoff."
