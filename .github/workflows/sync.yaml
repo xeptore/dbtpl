@@ -8,22 +8,22 @@ on:
     branches:
       - main
 
-permissions:
-  contents: none
-  deployments: none
-  actions: none
-  checks: none
-  discussions: none
-  id-token: none
-  issues: none
-  packages: none
-  pages: none
-  pull-requests: none
-  repository-projects: none
-  security-events: none
-  statuses: none
-  attestations: none
-  models: none
+# permissions:
+#   contents: none
+#   deployments: none
+#   actions: none
+#   checks: none
+#   discussions: none
+#   id-token: none
+#   issues: none
+#   packages: none
+#   pages: none
+#   pull-requests: none
+#   repository-projects: none
+#   security-events: none
+#   statuses: none
+#   attestations: none
+#   models: none
 
 concurrency:
   group: ${{ github.workflow }}/${{ github.ref_type }}/${{ github.ref_name }}
