@@ -90,9 +90,17 @@ jobs:
               continue
             fi
 
-            git tag -f "$ns" "$sha"
-            git push -f origin "refs/tags/${ns}:refs/tags/${ns}"
-            echo "::notice title=Tag pushed::$ns → $sha ($date)"
+            # fetch that object into the current repo so we can reference it
+            git fetch ../upstream "$sha" >/dev/null 2>&1 || true
+
+            # now create the namespaced tag
+            if git cat-file -e "$sha" 2>/dev/null; then
+              git tag -f "$ns" "$sha"
+              git push -f origin "refs/tags/${ns}:refs/tags/${ns}"
+              echo "::notice title=Tag pushed::$ns → $sha ($date)"
+            else
+              echo "::warning::⚠️  Skipped $tag (object not fetched properly)"
+            fi
           done < ../tags.txt
 
           echo "::endgroup::"
