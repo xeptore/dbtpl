@@ -1,0 +1,94 @@
+name: Sync Tags
+
+on:
+  schedule:
+    # https://crontab.guru/
+    - cron: "0 * * * *"
+
+permissions:
+  contents: none
+  deployments: none
+  actions: none
+  checks: none
+  discussions: none
+  id-token: none
+  issues: none
+  packages: none
+  pages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+concurrency:
+  group: ${{ github.workflow }}/${{ github.ref_type }}/${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  sync-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          path: current
+          clean: true
+          fetch-tags: true
+          show-progress: true
+
+      - name: Checkout Upstream Repo
+        uses: actions/checkout@v5
+        with:
+          repository: xo/dbtpl
+          submodules: recursive
+          fetch-depth: 0
+          fetch-tags: true
+          path: upstream
+          clean: true
+          show-progress: true
+
+      - name: Mirror Tags
+        shell: bash
+        run: |-
+          set -Eeuo pipefail
+
+          cutoff="2024-01-01T00:00:00Z"
+
+          echo "::group::Mirroring tags newer than $cutoff"
+
+          git for-each-ref \
+            --sort=creatordate \
+            --format='%(refname:short) %(creatordate:iso-strict)' \
+            refs/remotes/upstream/tags \
+            | awk -v c="$cutoff" '$2 >= c {print $1, $2}' \
+            > upstream_tags.txt
+
+          if [[ ! -s upstream_tags.txt ]]; then
+            echo "::notice::No upstream tags newer than cutoff."
+            exit 0
+          fi
+
+          while read -r tag date; do
+            ns="upstream/${tag}"
+            if git ls-remote --tags origin "refs/tags/${ns}" | grep -q .; then
+              echo "::notice::✓ Already mirrored: $ns"
+              continue
+            fi
+
+            sha=$(git ls-remote --tags upstream "refs/tags/${tag}" | awk '{print $1}' | head -n1)
+            if [[ -z "$sha" ]]; then
+              echo "::warning::⚠️ Tag $tag not found on upstream"
+              continue
+            fi
+
+            git tag -f "$ns" "$sha" >/dev/null
+            git push -f origin "refs/tags/${ns}:refs/tags/${ns}" >/dev/null
+            echo "::notice title=Tag pushed::$ns → $sha ($date)"
+          done < upstream_tags.txt
+
+          echo "::endgroup::"
+
+      - name: Done
+        run: echo "::notice::✅ Tag synchronization complete."
