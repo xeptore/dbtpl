@@ -44,6 +44,7 @@ jobs:
           clean: true
           fetch-tags: true
           show-progress: true
+          token: ${{ github.token }}
 
       - name: Checkout Upstream Repo
         uses: actions/checkout@v5
@@ -55,6 +56,7 @@ jobs:
           path: upstream
           clean: true
           show-progress: true
+          token: ${{ github.token }}
 
       - name: Filter Upstream Tags
         shell: bash
@@ -80,6 +82,9 @@ jobs:
             echo "::notice::No upstream tags newer than cutoff."
             exit 0
           fi
+
+          git config user.name "actions-bot"
+          git config user.email "actions@users.noreply.github.com"
 
           while read -r tag date; do
             ns="upstream/${tag}"
