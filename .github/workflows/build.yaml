@@ -64,11 +64,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          repository: xo/dbtpl
-          ref: v${{ needs.parse-tag.outputs.tag }}
           fetch-depth: 0
           fetch-tags: true
-          path: xo
+          path: .
           token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
           show-progress: true
@@ -76,9 +74,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
+          repository: xo/dbtpl
+          ref: v${{ needs.parse-tag.outputs.tag }}
           fetch-depth: 0
           fetch-tags: true
-          path: .
+          path: xo
           token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
           show-progress: true
@@ -108,7 +108,7 @@ jobs:
             type=raw,value=${{ needs.parse-tag.outputs.tag }},prefix=v,enabled=true
           flavor: |-
             # See https://github.com/docker/metadata-action#latest-tag
-            latest=${{ github.ref_name == github.event.repository.default_branch }}
+            latest=${{ steps.is-latest.outputs.is_latest == 'true' }}
             prefix=,onlatest=false
           labels: |-
             maintainer=${{ github.repository_owner }}
