@@ -12,4 +12,4 @@ FROM gcr.io/distroless/static-debian12:nonroot AS runtime
 
 COPY --chown=nonroot:nonroot --from=build /app/xo/dbtpl /dbtpl
 
-CMD [ "/dbtpl" ]
+ENTRYPOINT [ "/dbtpl" ]
