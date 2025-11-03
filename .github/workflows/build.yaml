@@ -136,6 +136,8 @@ jobs:
           context: .
           file: Dockerfile
           no-cache: true
+          build-args: |-
+            VERSION=v${{needs.parse-tag.outputs.tag}}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64

@@ -6,7 +6,9 @@ COPY xo/ xo/
 
 ENV CGO_ENABLED=0
 
-RUN go build -C ./xo/ -o dbtpl main.go
+ARG VERSION
+
+RUN go build -C ./xo/ -s -w -X main.name=dbtpl -X main.version=${VERSION} -o dbtpl main.go
 
 FROM gcr.io/distroless/static-debian12:nonroot AS runtime
 
