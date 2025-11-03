@@ -86,11 +86,8 @@ jobs:
       - name: Check Latest Tag
         id: is-latest
         run: |
-          latest_tag=$(git -C xo tag --sort=-v:refname | head -n1)
-          echo "Latest tag: $latest_tag"
-
+          latest_tag="$(git -C xo tag --sort=-v:refname | head -n1)"
           current_tag="v${{ needs.parse-tag.outputs.tag }}"
-          echo "Current tag: $current_tag"
 
           if [ "$current_tag" = "$latest_tag" ]; then
             echo "is_latest=true" >> "$GITHUB_OUTPUT"
