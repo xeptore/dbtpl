@@ -69,6 +69,16 @@ jobs:
           ref: v${{ needs.parse-tag.outputs.tag }}
           fetch-depth: 0
           fetch-tags: true
+          path: xo
+          token: ${{ secrets.GITHUB_TOKEN }}
+          clean: true
+          show-progress: true
+
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
           path: .
           token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
