@@ -16,8 +16,8 @@ RUN go build \
     -o dbtpl  \
     main.go
 
-FROM gcr.io/distroless/static-debian12:nonroot AS runtime
+FROM docker.io/library/alpine:3.22 AS runtime
 
-COPY --chown=nonroot:nonroot --from=build /app/xo/dbtpl /dbtpl
+COPY --from=build /app/xo/dbtpl /dbtpl
 
 ENTRYPOINT [ "/dbtpl" ]
