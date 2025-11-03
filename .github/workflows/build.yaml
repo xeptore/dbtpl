@@ -89,7 +89,7 @@ jobs:
           latest_tag=$(git -C xo tag --sort=-v:refname | head -n1)
           echo "Latest tag: $latest_tag"
 
-          current_tag="${{ needs.parse-tag.outputs.tag }}"
+          current_tag="v${{ needs.parse-tag.outputs.tag }}"
           echo "Current tag: $current_tag"
 
           if [ "$current_tag" = "$latest_tag" ]; then
