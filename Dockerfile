@@ -2,7 +2,7 @@ FROM docker.io/library/golang:1.25.3-trixie AS build
 
 WORKDIR /app
 
-COPY xo/ .
+COPY xo/ xo/
 
 ENV CGO_ENABLED=0
 
