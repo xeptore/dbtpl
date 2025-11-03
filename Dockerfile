@@ -16,7 +16,7 @@ RUN go build \
     -o dbtpl  \
     main.go
 
-FROM docker.io/library/alpine:3.22 AS runtime
+FROM docker.io/library/golang:1.25.3:alpine AS runtime
 
 COPY --from=build /app/xo/dbtpl /dbtpl
 
