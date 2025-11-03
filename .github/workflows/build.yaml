@@ -83,10 +83,10 @@ jobs:
           clean: true
           show-progress: true
 
-      - name: Check if current tag is latest
+      - name: Check Latest Tag
         id: is-latest
         run: |
-          latest_tag=$(git -C xo tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+          latest_tag=$(git -C xo tag --sort=-v:refname | head -n1)
           echo "Latest tag: $latest_tag"
 
           current_tag="${{ needs.parse-tag.outputs.tag }}"
