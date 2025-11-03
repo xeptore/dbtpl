@@ -1,9 +1,9 @@
-import { writeFile } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { SemVer } from "semver";
 
 const p = new SemVer(process.argv[2]);
 
-writeFile(
+writeFileSync(
   "tag.txt",
   [p.major, p.minor, p.patch].join("."),
   { encoding: "utf-8" },
