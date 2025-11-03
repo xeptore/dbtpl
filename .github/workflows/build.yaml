@@ -47,7 +47,6 @@ jobs:
         id: parse-tag
         run: |-
           bun parse-tag.mjs ${{ github.ref_name }}
-          cat tag.txt
           echo "tag=$(cat tag.txt)" >> $GITHUB_OUTPUT
 
   build-docker-image:
