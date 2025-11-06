@@ -1,4 +1,4 @@
-FROM docker.io/library/golang:1.25.3-trixie AS build
+FROM docker.io/library/golang:1.25.4-trixie AS build
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN go build \
     -o dbtpl  \
     main.go
 
-FROM docker.io/library/golang:1.25.3-alpine AS runtime
+FROM docker.io/library/golang:1.25.4-alpine AS runtime
 
 COPY --from=build /app/xo/dbtpl /dbtpl
 
